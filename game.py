@@ -1,71 +1,66 @@
-
+import numpy as np
 import pygame
 
-from .player import Player
-
-# Define some colors
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
+from agar import Agar
+from colony import Colony
 
 class Game:
-    
+
     def __init__(self):
-        
-        self.players = []
-        
-        self.running = True
-        
-        pygame.init()
-        
-        # Set the width and height of the screen [width, height]
-        size = (700, 500)
-        self.screen = pygame.display.set_mode(size)
-        
-        pygame.display.set_caption("Agar.AI")
-                
-        # Used to manage how fast the screen updates
-        self.clock = pygame.time.Clock()
 
-    def add_player(self, player):
+        self.arena_size = np.array([1000, 1000])
         
-        self.players.append(player)
-    
-    
+        self.agar = pygame.sprite.Group()
+        
+        self.agar.add(Agar())
+        
+        self.colonies = pygame.sprite.Group()
+
     def start(self):
+        pass
+
+    def update(self, game_arguments):
+        """
+            The control dictionary assigns each colony with their updated speed.
+        """
+        control_dicitonary = game_arguments.get('control', {})
         
-        # -------- Main Program Loop -----------
-        while self.running:
-            # --- Main event loop
-            for event in pygame.event.get():
-                
-                if event.type == pygame.QUIT:
-                    self.running = False
+        self.colonies.update(control_dicitonary)
+        
+        # self.petri_dish.update()
+        # self.colonies.update()
+        # self.spawn_colony()
+
+        # Check for collisions
+        eat_dict = pygame.sprite.groupcollide(self.colonies, self.agar, False, False)
+        
+        self.check_eaten(eat_dict)
+        
+        # print(f"{eat_dict = }")
+        
         
 
-            # background image -> blit the background image.
-            self.screen.fill(WHITE)
+    def spawn_colony(self):
         
-            # --- Drawing code should go here
-        
-            # --- Go ahead and update the screen with what we've drawn.
-            pygame.display.flip()
-        
-            # --- Limit to 60 frames per second
-            self.clock.tick(60)
-        
-        # Close the window and quit.
-        pygame.quit()
-        
+        if len(self.colonies.sprites()) == 0:
+            self.colonies.add(Colony(focus=True))
+        else:
+            self.colonies.add(Colony())
     
+    
+    def check_eaten(self, eat_dict):
+        """
+            Checks if entity had been completely consumed.
+        """
+        
+        for predator, prey_list in eat_dict.items():
+            
+            for prey in prey_list:
+                
+                if not predator.rect.contains(prey.rect):
+                    
+                    eat_dict[predator].remove(prey)
+                    
 if __name__ == "__main__":
-    
-    game = Game()
-    
-    game.add_player(Player())
-    
-    game.start()
-    
-    
-    
+
+    print("This is the game.py file.")
