@@ -9,7 +9,7 @@ class Agar(pygame.sprite.Sprite):
     
         self.points = 100
         
-        self.position = np.array([ 25, 0. ]) # x, y
+        self.position = np.array([ 0, 0. ]) # x, y
         
         self.image = pygame.image.load("sprites/agar.png")
         

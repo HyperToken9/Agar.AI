@@ -52,9 +52,9 @@ class Renderer:
         """
         self.game.start()
         
-        self.game.spawn_colony()
-        
         # self.game.spawn_colony()
+        
+        self.game.spawn_colony()
         
         # -------- Main Program Loop -----------
         while self.running:
@@ -64,27 +64,27 @@ class Renderer:
                   
                 
                 if event.type == pygame.QUIT:
-                    self.running = False
-            
-            # self.players.update(move_by = )
-            
-            # TODO: Calculate Positional Updates 
-            
-           
-            
-            control_dictionary = {}
-            
-            control_dictionary[0] = self.cursor_relative_position() / 500
-            
-            game_arguments = {'control':control_dictionary, }
-            
-            self.game.update(game_arguments)
+                    self.running = False            
             
             # --- Drawing code should go here
             self.render_background()
         
             self.render_game_entities()
-            
+
+            # self.players.update(move_by = )
+
+           
+            # TODO: Calculate Positional Updates
+
+            control_dictionary = {}
+
+            control_dictionary[0] = self.cursor_relative_position() / 500
+
+            game_arguments = {'control': control_dictionary, }
+
+            self.game.update(game_arguments)
+
+
             # --- Go ahead and update the screen with what we've drawn.
             pygame.display.flip()
         
@@ -105,18 +105,10 @@ class Renderer:
         focused_entity = self.game.colonies.sprites()[0]
         
         for sprite in self.game.colonies.sprites():
-            
         
             location = sprite.position - focused_entity.position + self.screen_size / 2
-            print("Render Before", sprite.rect.center)   
-            print("Location", location) 
             sprite.rect.center = location
-            print("Render After", sprite.rect.center)    
-            
-        
-        self.game.colonies.draw(self.screen)
-        
-        
+                
         # Agar 
         # self.game.petri_dish.
         for sprite in self.game.agar.sprites():
@@ -126,6 +118,7 @@ class Renderer:
             sprite.rect.center = location
         
         self.game.agar.draw(self.screen)
+        self.game.colonies.draw(self.screen)
     
     def render_background(self):
         """

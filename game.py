@@ -3,6 +3,7 @@ import pygame
 
 from agar import Agar
 from colony import Colony
+from spawner import Spawner
 
 class Game:
 
@@ -27,18 +28,14 @@ class Game:
         
         self.colonies.update(control_dicitonary)
         
-        # self.petri_dish.update()
-        # self.colonies.update()
-        # self.spawn_colony()
-
         # Check for collisions
         eat_dict = pygame.sprite.groupcollide(self.colonies, self.agar, False, False)
         
-        self.check_eaten(eat_dict)
-        
-        # print(f"{eat_dict = }")
-        
-        
+        for colony, agars in eat_dict.items():
+            
+            colony.check_eaten(agars)
+
+        # print(eat_dict)
 
     def spawn_colony(self):
         
@@ -46,20 +43,8 @@ class Game:
             self.colonies.add(Colony(focus=True))
         else:
             self.colonies.add(Colony())
-    
-    
-    def check_eaten(self, eat_dict):
-        """
-            Checks if entity had been completely consumed.
-        """
-        
-        for predator, prey_list in eat_dict.items():
-            
-            for prey in prey_list:
-                
-                if not predator.rect.contains(prey.rect):
-                    
-                    eat_dict[predator].remove(prey)
+     
+
                     
 if __name__ == "__main__":
 

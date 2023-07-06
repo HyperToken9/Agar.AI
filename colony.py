@@ -10,18 +10,24 @@ class Colony(pygame.sprite.Sprite):
         
         self.id = id_number
         
-        self.points = 100
+        self.points = 0
         
-        self.position = np.array([ 50, 0. ]) # x, y
+        self.position = np.array([ 45, 0. ]) # x, y
         
-        self.image = pygame.image.load("sprites/red.png")
+        self.base_image = pygame.image.load("sprites/red.png")
+        
+        self.image = self.base_image
+
+        print(type(self.image))
 
         self.rect = self.image.get_rect()
-        
+
         # self.color = (255, 0, 0)
         
         self.focus = focus
         
+        self.SIZE_FACTOR = 0.01
+        self.BASE_SIZE = self.image.get_size()[0]
         # self.image.fill(self.color)
         
     def update(self, control_dicitonary):
@@ -30,28 +36,42 @@ class Colony(pygame.sprite.Sprite):
         
         self.position += move_by
         
-        self.resize(point_shift = 2)
-        
-        
+        # self.resize(point_shift = 2)
         
         # print(f"{self.position = }")
         
-        # move_by = kwargs.get("move_by", np.array([0, 0]))
-        # if self.focus:   
-        #     # print('Moving by: ', move_by)
-        #     self.position += move_by
-        # self.rect.x = self.position[0]
-        # self.rect.y = self.position[1]
 
-    def resize(self, point_shift):
+    def resize(self):
+
+        new_size = self.BASE_SIZE + self.points * self.SIZE_FACTOR
+        new_size = (new_size, new_size)
+
+        center = self.rect.center
+        self.image = pygame.transform.scale(self.base_image, new_size)
+        self.rect = self.image.get_rect()
+        self.rect.center = center
         
-        # center = self.rect.center
-        print("Before", self.rect.center)
-        self.rect = self.rect.inflate(point_shift, point_shift)
-        print("After", self.rect.center)
-        # self.rect.center = center
-        
+    def check_eaten(self, agars):
+
+        for agar in agars:
     
+            if not self.rect.contains(agar):
+                # print("Not eating")
+                continue 
+            
+            # Else Add points
+            print("Eating", agar)
+            
+            self.update_points(delta = agar.points)
+            agar.kill()
+
+    def update_points(self, delta = 0, new = -1):
+
+        self.points += delta
+
+        self.resize()
+
+
     def get_size(self):
         
         return [self.points, self.points]
