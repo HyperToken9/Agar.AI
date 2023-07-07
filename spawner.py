@@ -1,6 +1,8 @@
 import cv2 as cv
 import numpy as np
+from random import randint
 from random import choices
+
 
 from agar import Agar
 
@@ -31,20 +33,15 @@ class Spawner:
         
         spawn_indices = choices(indices, weights, k=SPAWN_COUNT)
 
-        print(f"{spawn_indices = }")
-
         for index in spawn_indices:
             
-            # print(f"{index, index}")
             position =  (index % arean_width, index // arean_width)
-
-            # Spwan Rate seems to sky rocket at the edge of the map.
 
             self.game.agar.add(Agar(position = np.array(position)))
 
     def limit_spawn_rate(self):
-        
-        THRESHOLD = 0.50 # of the MAXIMUM SPAWN
+              
+        THRESHOLD = 0.40 # of the MAXIMUM SPAWN
 
         max_permissiblity = self.game.arena_size[0] * self.game.arena_size[1]
         

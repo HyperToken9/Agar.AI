@@ -25,8 +25,6 @@ class Renderer:
         
         self.background_size = self.background.get_size()
         
-        print(f"{self.background_size = }")
-        
         # Set the width and height of the screen [width, height]
         self.screen_size = np.array((700, 500))
         
@@ -51,10 +49,6 @@ class Renderer:
             Initializes Game With GUI
         """
         self.game.start()
-        
-        # self.game.spawn_colony()
-        
-        self.game.spawn_colony()
         
         # -------- Main Program Loop -----------
         while self.running:
@@ -112,7 +106,6 @@ class Renderer:
             sprite.rect.center = location
                 
         # Agar 
-        # self.game.petri_dish.
         for sprite in self.game.agar.sprites():
             
             location = sprite.position - focused_entity.position + self.screen_size / 2

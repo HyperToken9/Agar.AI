@@ -35,7 +35,7 @@ class Agar(pygame.sprite.Sprite):
 
         distribution = range(50, 300)
         self.points = choices(distribution, distribution)[0]
-        print(f"Points Assigned: {self.points }")
+        # print(f"Points Assigned: {self.points }")
 
     def get_size(self):
         return BASE_SIZE + self.points * SIZE_FACTOR

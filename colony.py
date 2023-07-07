@@ -4,17 +4,23 @@ import numpy as np
 import time
 
 # Parameters
-BASE_SIZE   = 50.00
+BASE_SIZE   = 50.000
 SIZE_FACTOR = 00.005
+
+colony_id = 0
 
 class Colony(pygame.sprite.Sprite):
     
-    def __init__(self, id_number = 0, focus=False):
-        
+    def __init__(self, focus=False):
+
         pygame.sprite.Sprite.__init__(self)
         
-        self.id = id_number
-        
+        global colony_id
+
+        self.id = colony_id
+
+        colony_id += 1
+
         self.points = 0
         
         self.position = np.array([ 550, 500. ]) # x, y
@@ -22,8 +28,6 @@ class Colony(pygame.sprite.Sprite):
         self.base_image = pygame.image.load("sprites/red.png")
         
         self.image = self.base_image
-
-        print(type(self.image))
 
         self.rect = self.image.get_rect()
 
@@ -34,16 +38,41 @@ class Colony(pygame.sprite.Sprite):
         self.resize()
 
         # self.image.fill(self.color)
+
+    def move(self, move_by):
+
+        arena_size = 1000
+
+        factor = 1 # / (1 + self.points)
+
+        magnitude = np.linalg.norm(move_by)
+
+        if magnitude > 0.5:
+            move_by /= magnitude
+            move_by *= self.top_speed()
+
+
+        self.position += move_by * factor
+
+        size = self.get_size() / 2.1
+
+        if self.position[0] - size < 0:
+            self.position[0] = size
         
+        if self.position[1] - size < 0:
+            self.position[1] = size
+
+        if self.position[0] + size > arena_size:
+            self.position[0] = arena_size - size
+        
+        if self.position[1] + size > arena_size:
+            self.position[1] = arena_size - size
+    
     def update(self, control_dicitonary):
         
         move_by = control_dicitonary.get(self.id, np.array([0, 0]))
-        
-        self.position += move_by
-        
-        # self.resize(point_shift = 2)
-        
-        # print(f"{self.position = }")
+
+        self.move(move_by)        
     
     def get_size(self):
         return BASE_SIZE + self.points * SIZE_FACTOR
@@ -60,11 +89,6 @@ class Colony(pygame.sprite.Sprite):
         
     def eat(self, agars):
 
-        # if len(agars) > 10:
-        #     for agar in agars:
-        #         print(agar.position)
-        #     exit(0)
-
         for agar in agars:
     
             if not agar.alive():
@@ -78,11 +102,20 @@ class Colony(pygame.sprite.Sprite):
             self.update_points(delta = agar.points)
             agar.kill()
 
+    def top_speed(self):
+        MIN_SPEED = 0.5
+        MAX_SPEED = 5.0
+        CURVE = 0.0001 # Decrease to make curve smoother
+        return MIN_SPEED + (MAX_SPEED - MIN_SPEED) * np.exp(-CURVE * self.points)
+    
     def update_points(self, delta = 0, new = -1):
         
         self.points += delta
 
         self.resize()
+
+    def __gt__(self, other):
+        return self.points < other.points
 
 
 if __name__ == '__main__':

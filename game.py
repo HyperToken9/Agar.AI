@@ -12,15 +12,16 @@ class Game:
         self.arena_size = np.array([1000, 1000]) # Height, Width
         
         self.agar = pygame.sprite.Group()
-        
-        self.agar.add(Agar())
-        
+                
         self.colonies = pygame.sprite.Group()
 
         self.spawner = Spawner(self)
 
     def start(self):
-        pass
+        
+        self.spawn_colony()
+
+        self.spawn_colony()
 
     def update(self, game_arguments):
         """
