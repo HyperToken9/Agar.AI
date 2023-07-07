@@ -3,6 +3,8 @@ import pygame
 import numpy as np
 import time
 
+from agar import Agar
+
 # Parameters
 BASE_SIZE   = 50.000
 SIZE_FACTOR = 00.005
@@ -11,7 +13,7 @@ colony_id = 0
 
 class Colony(pygame.sprite.Sprite):
     
-    def __init__(self, focus=False):
+    def __init__(self, position, points= 0, focus=False):
 
         pygame.sprite.Sprite.__init__(self)
         
@@ -21,16 +23,16 @@ class Colony(pygame.sprite.Sprite):
 
         colony_id += 1
 
-        self.points = 0
+        self.points = points
         
-        self.position = np.array([ 550, 500. ]) # x, y
+        self.position = position # x, y
         
         self.base_image = pygame.image.load("sprites/red.png")
         
         self.image = self.base_image
 
         self.rect = self.image.get_rect()
-
+        self.rect.center = self.position
         # self.color = (255, 0, 0)
         
         self.focus = focus
@@ -87,20 +89,22 @@ class Colony(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = center
         
-    def eat(self, agars):
+    def eat(self, game_objects):
 
-        for agar in agars:
-    
-            if not agar.alive():
+        for obj in game_objects:
+            
+            if obj is self:
+                continue
+
+            if not obj.alive():
                 continue
             
-            if not self.rect.contains(agar):
-                # print("Not eating")
+            if not self.rect.contains(obj):
                 continue 
             
-            
-            self.update_points(delta = agar.points)
-            agar.kill()
+            self.update_points(delta = obj.points)
+
+            obj.kill()
 
     def top_speed(self):
         MIN_SPEED = 0.5
@@ -113,9 +117,6 @@ class Colony(pygame.sprite.Sprite):
         self.points += delta
 
         self.resize()
-
-    def __gt__(self, other):
-        return self.points < other.points
 
 
 if __name__ == '__main__':

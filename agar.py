@@ -1,5 +1,9 @@
 import pygame
+import colorsys
+import cv2 as cv
 import numpy as np
+import pygame.gfxdraw
+from random import random
 from random import choices
 
 # Parameters
@@ -19,8 +23,13 @@ class Agar(pygame.sprite.Sprite):
         self.position = position # x, y
         
         self.base_image = pygame.image.load("sprites/agar.png")
-        self.image = self.base_image
         
+        self.generate_sprite()
+        # pygame.gfxdraw.filled_circle(
+        #     self.base_image, 20, 20, 20, (255, 0, 100, 255))
+
+        self.image = self.base_image
+
         self.rect = self.image.get_rect()
 
         self.points = points
@@ -52,4 +61,12 @@ class Agar(pygame.sprite.Sprite):
         self.rect.center = center
 
 
+    def generate_sprite(self):
+
+        size = self.base_image.get_size()[0]
+        d = size // 2
         
+        hue = random()
+        r, g, b = colorsys.hsv_to_rgb(hue, 1, 1)
+        color = np.array((r, g, b, 1)) * 255
+        pygame.gfxdraw.filled_circle(self.base_image, d, d, d, color)

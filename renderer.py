@@ -100,6 +100,7 @@ class Renderer:
         # Colonies
         focused_entity = self.game.colonies.sprites()[0]
         
+
         for sprite in self.game.colonies.sprites():
         
             location = sprite.position - focused_entity.position + self.screen_size / 2
