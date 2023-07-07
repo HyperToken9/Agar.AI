@@ -9,13 +9,15 @@ class Game:
 
     def __init__(self):
 
-        self.arena_size = np.array([1000, 1000])
+        self.arena_size = np.array([1000, 1000]) # Height, Width
         
         self.agar = pygame.sprite.Group()
         
         self.agar.add(Agar())
         
         self.colonies = pygame.sprite.Group()
+
+        self.spawner = Spawner(self)
 
     def start(self):
         pass
@@ -33,9 +35,9 @@ class Game:
         
         for colony, agars in eat_dict.items():
             
-            colony.check_eaten(agars)
+            colony.eat(agars)
 
-        # print(eat_dict)
+        self.spawner.spawn_agar()
 
     def spawn_colony(self):
         

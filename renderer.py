@@ -3,7 +3,7 @@ import pygame
 import numpy as np
 
 from game import Game
-
+from stats import Stats
 # Define some colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -78,7 +78,7 @@ class Renderer:
 
             control_dictionary = {}
 
-            control_dictionary[0] = self.cursor_relative_position() / 500
+            control_dictionary[0] = self.cursor_relative_position() / 50
 
             game_arguments = {'control': control_dictionary, }
 
@@ -87,7 +87,9 @@ class Renderer:
 
             # --- Go ahead and update the screen with what we've drawn.
             pygame.display.flip()
-        
+
+            # Stats.plot_heat_map(self.game.agar)
+
             # --- Limit to 60 frames per second
             self.clock.tick(60)
         

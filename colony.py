@@ -1,6 +1,7 @@
 
 import pygame
 import numpy as np
+import time
 
 class Colony(pygame.sprite.Sprite):
     
@@ -12,7 +13,7 @@ class Colony(pygame.sprite.Sprite):
         
         self.points = 0
         
-        self.position = np.array([ 45, 0. ]) # x, y
+        self.position = np.array([ 550, 500. ]) # x, y
         
         self.base_image = pygame.image.load("sprites/red.png")
         
@@ -28,6 +29,9 @@ class Colony(pygame.sprite.Sprite):
         
         self.SIZE_FACTOR = 0.01
         self.BASE_SIZE = self.image.get_size()[0]
+        print(f"{self.BASE_SIZE = }")
+
+        self.START_TIME = time.time()
         # self.image.fill(self.color)
         
     def update(self, control_dicitonary):
@@ -39,11 +43,20 @@ class Colony(pygame.sprite.Sprite):
         # self.resize(point_shift = 2)
         
         # print(f"{self.position = }")
+    
+    def get_size(self):
         
+        # print(f"{self.points= }")
+
+        size = self.BASE_SIZE + self.points * self.SIZE_FACTOR
+
+        # print(f"{size = }")
+        # print(f"{size= }")
+        return size
 
     def resize(self):
 
-        new_size = self.BASE_SIZE + self.points * self.SIZE_FACTOR
+        new_size = self.get_size()
         new_size = (new_size, new_size)
 
         center = self.rect.center
@@ -51,30 +64,33 @@ class Colony(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = center
         
-    def check_eaten(self, agars):
+    def eat(self, agars):
+
+        # if len(agars) > 10:
+        #     for agar in agars:
+        #         print(agar.position)
+        #     exit(0)
 
         for agar in agars:
     
+            if not agar.alive():
+                continue
+            
             if not self.rect.contains(agar):
                 # print("Not eating")
                 continue 
             
-            # Else Add points
-            print("Eating", agar)
             
             self.update_points(delta = agar.points)
             agar.kill()
 
     def update_points(self, delta = 0, new = -1):
+        
+        print(int(time.time() - self.START_TIME),delta)
 
         self.points += delta
 
         self.resize()
-
-
-    def get_size(self):
-        
-        return [self.points, self.points]
 
 
 if __name__ == '__main__':
