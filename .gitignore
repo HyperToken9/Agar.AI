@@ -1,0 +1,8 @@
+# Auto-generated files from VSCode
+.vscode/
+
+# Auto-generated files from PyCharm
+.idea/
+
+# Python byte-compiled files
+__pycache__/
