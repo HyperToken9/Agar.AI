@@ -44,7 +44,7 @@ class Spawner:
 
     def limit_spawn_rate(self):
         
-        THRESHOLD = 0.9 # 90% of the MAXIMUM SPAWN
+        THRESHOLD = 0.50 # of the MAXIMUM SPAWN
 
         max_permissiblity = self.game.arena_size[0] * self.game.arena_size[1]
         
@@ -58,7 +58,7 @@ class Spawner:
     def update_spawn_map(self):
         
         #TODO: Let this method taken in a list of groups, based on which the spawn map is updated.
-        
+
         self.spawn_map = np.ones(self.game.arena_size)
         
         for colony in self.game.colonies.sprites():

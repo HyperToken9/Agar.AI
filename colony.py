@@ -3,6 +3,10 @@ import pygame
 import numpy as np
 import time
 
+# Parameters
+BASE_SIZE   = 50.00
+SIZE_FACTOR = 00.005
+
 class Colony(pygame.sprite.Sprite):
     
     def __init__(self, id_number = 0, focus=False):
@@ -27,11 +31,8 @@ class Colony(pygame.sprite.Sprite):
         
         self.focus = focus
         
-        self.SIZE_FACTOR = 0.01
-        self.BASE_SIZE = self.image.get_size()[0]
-        print(f"{self.BASE_SIZE = }")
+        self.resize()
 
-        self.START_TIME = time.time()
         # self.image.fill(self.color)
         
     def update(self, control_dicitonary):
@@ -45,14 +46,7 @@ class Colony(pygame.sprite.Sprite):
         # print(f"{self.position = }")
     
     def get_size(self):
-        
-        # print(f"{self.points= }")
-
-        size = self.BASE_SIZE + self.points * self.SIZE_FACTOR
-
-        # print(f"{size = }")
-        # print(f"{size= }")
-        return size
+        return BASE_SIZE + self.points * SIZE_FACTOR
 
     def resize(self):
 
@@ -86,8 +80,6 @@ class Colony(pygame.sprite.Sprite):
 
     def update_points(self, delta = 0, new = -1):
         
-        print(int(time.time() - self.START_TIME),delta)
-
         self.points += delta
 
         self.resize()
