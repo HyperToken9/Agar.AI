@@ -53,31 +53,36 @@ class Renderer:
         # -------- Main Program Loop -----------
         while self.running:
             
+            control_dictionary = {}
+
+            primary_player = {'move': self.cursor_relative_position() / 50}
+
             # --- Main event loop
             for event in pygame.event.get():
                   
                 
                 if event.type == pygame.QUIT:
                     self.running = False            
+
+                # checking if keydown event happened or not
+                if event.type == pygame.KEYDOWN:
+
+                    if event.key == pygame.K_SPACE:
+                        primary_player['split'] = True
             
-            # --- Drawing code should go here
-            self.render_background()
-        
-            self.render_game_entities()
 
-            # self.players.update(move_by = )
-
-           
             # TODO: Calculate Positional Updates
 
-            control_dictionary = {}
-
-            control_dictionary[0] = self.cursor_relative_position() / 50
+            control_dictionary[0] = primary_player
 
             game_arguments = {'control': control_dictionary, }
 
             self.game.update(game_arguments)
 
+            # --- Drawing code should go here
+            self.render_background()
+
+            self.render_game_entities()
 
             # --- Go ahead and update the screen with what we've drawn.
             pygame.display.flip()

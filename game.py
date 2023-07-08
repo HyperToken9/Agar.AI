@@ -2,7 +2,7 @@ import numpy as np
 import pygame
 
 from agar import Agar
-from colony import Colony
+from cell import Cell
 from spawner import Spawner
 
 class Game:
@@ -53,9 +53,9 @@ class Game:
     def spawn_colony(self, position = np.array([500, 500.])):
         
         if len(self.colonies.sprites()) == 0:
-            self.colonies.add(Colony(position= position, focus=True))
+            self.colonies.add(Cell(position= position, focus=True))
         else:
-            self.colonies.add(Colony(position= position, points= 900))
+            self.colonies.add(Cell(position= position, points= 900))
      
 
                     
