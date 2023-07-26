@@ -3,12 +3,14 @@ import pygame
 import numpy as np
 
 from game import Game
-from stats import Stats
+from toolkit import ToolKit
 # Define some colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
+
+#TODO: There needs to be a centralized way to deal with focused player
 
 class Renderer:
     
@@ -55,7 +57,7 @@ class Renderer:
             
             control_dictionary = {}
 
-            primary_player = {'move': self.cursor_relative_position() / 50}
+            primary_player = {'move_by': self.cursor_relative_position() / 50}
 
             # --- Main event loop
             for event in pygame.event.get():
@@ -103,32 +105,34 @@ class Renderer:
                 - Spikes
         """
         # Colonies
-        focused_entity = self.game.colonies.sprites()[0]
+        focused_entity = self.game.players.player_index[0]
         
 
-        for sprite in self.game.colonies.sprites():
+        for player in self.game.get_players():
         
-            location = sprite.position - focused_entity.position + self.screen_size / 2
-            sprite.rect.center = location
+            for sprite in player.get_cells():
+
+                location = sprite.position - focused_entity.position_goal + self.screen_size / 2
+                sprite.rect.center = location
                 
-        # Agar 
-        for sprite in self.game.agar.sprites():
+        # # Agar 
+        # for sprite in self.game.agar.sprites():
             
-            location = sprite.position - focused_entity.position + self.screen_size / 2
+        #     location = sprite.position - focused_entity.position_goal + self.screen_size / 2
             
-            sprite.rect.center = location
+        #     sprite.rect.center = location
         
-        self.game.agar.draw(self.screen)
-        self.game.colonies.draw(self.screen)
+        # self.game.agar.draw(self.screen)
+        self.game.players.draw(self.screen)
     
     def render_background(self):
         """
             Tiles the screen with the background image
         """
 
-        focused_entity = self.game.colonies.sprites()[0]
+        focused_entity = self.game.players.player_index[0]
         
-        offset = focused_entity.position * -1
+        offset = focused_entity.position_goal * -1
         
         offset %= self.background_size
         

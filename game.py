@@ -2,7 +2,7 @@ import numpy as np
 import pygame
 
 from agar import Agar
-from cell import Cell
+from player_container import PlayerContainer
 from spawner import Spawner
 
 class Game:
@@ -12,16 +12,19 @@ class Game:
         self.arena_size = np.array([1000, 1000]) # Height, Width
         
         self.agar = pygame.sprite.Group()
-                
-        self.colonies = pygame.sprite.Group()
+        
+        self.players = PlayerContainer()
 
         self.spawner = Spawner(self)
 
     def start(self):
- 
-        self.spawn_colony()
+        
+        self.players.spawn_player(position=np.array([155., 100]))
+        # self.add_player()
 
-        self.spawn_colony(position = np.array([100, 100]))
+        self.players.spawn_player(position=np.array([100., 100]))
+        # self.add_player(position = np.array([100, 100]))
+
 
     def update(self, game_arguments):
         """
@@ -29,35 +32,41 @@ class Game:
         """
         control_dicitonary = game_arguments.get('control', {})
         
-        self.colonies.update(control_dicitonary)
+        self.players.update(control_dicitonary)
         
-        # Eating Agar
-        eat_dict = pygame.sprite.groupcollide(self.colonies, self.agar, False, False)
+        # # Eating Agar
+        # eat_dict = pygame.sprite.groupcollide(self.colonies, self.agar, False, False)
         
-        for colony, agars in eat_dict.items():
+        # for colony, agars in eat_dict.items():
             
-            colony.eat(agars)
+        #     colony.eat(agars)
 
         # Eating Colony
-        eat_dict = pygame.sprite.groupcollide(self.colonies, self.colonies, False, False)
+        # eat_dict = pygame.sprite.groupcollide(self.colonies, self.colonies, False, False)
 
-        for colony, colonies in eat_dict.items():
-
-            # print(colonies)
-            colony.eat(colonies)
-            # a = 1
+        # for colony, colonies in eat_dict.items():
+        #     # print(colonies)
+        #     colony.eat(colonies)
         
+        # Spawing Agar
+        # self.spawner.spawn_agar()
 
-        self.spawner.spawn_agar()
+    def get_players(self):
 
-    def spawn_colony(self, position = np.array([500, 500.])):
-        
-        if len(self.colonies.sprites()) == 0:
-            self.colonies.add(Cell(position= position, focus=True))
-        else:
-            self.colonies.add(Cell(position= position, points= 900))
-     
+        return self.players.player_index.values()
 
+    # def add_player(self, position = np.array([500, 500.])): 
+    #     self.players.spawn_player(position)
+        # global COLONY_ID
+        # if COLONY_ID == 0:
+        #     self.colonies[COLONY_ID] = Colony(id = COLONY_ID,
+        #                                       spawn_position = position,
+        #                                       focus=True)
+        # else:
+        #     self.colonies[COLONY_ID] = Colony(id = COLONY_ID, 
+        #                                       spawn_position = position, 
+        #                                       points = 900)
+        # COLONY_ID += 1
                     
 if __name__ == "__main__":
 

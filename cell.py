@@ -1,7 +1,7 @@
-
+import time
 import pygame
 import numpy as np
-import time
+from math import dist
 
 from agar import Agar
 
@@ -9,22 +9,30 @@ from agar import Agar
 BASE_SIZE   = 50.000
 SIZE_FACTOR = 00.005
 
-cell_id = 0
+# Speed Parameters
+MIN_SPEED = 0.5
+MAX_SPEED = 5.0
+CURVE = 0.0001  # Decrease to make speed curve smoother
+P_TERM = 0.1
+
+
+CELL_ID = 0
 
 class Cell(pygame.sprite.Sprite):
     
-    def __init__(self, position, points= 0, focus=False):
+    def __init__(self, position, points= 1000):
 
         pygame.sprite.Sprite.__init__(self)
         
-        global cell_id
+        global CELL_ID
 
-        self.id = cell_id
-
-        cell_id += 1
+        self.id = CELL_ID
+        CELL_ID += 1
 
         self.points = points
         
+        self.velocity = np.array([0, 0], dtype = np.float64) #BUG: When not set to Zero initally
+
         self.position = position # x, y
         
         self.base_image = pygame.image.load("sprites/red.png")
@@ -32,43 +40,71 @@ class Cell(pygame.sprite.Sprite):
         self.image = self.base_image
 
         self.rect = self.image.get_rect()
+        
         self.rect.center = self.position
         # self.color = (255, 0, 0)
         
-        self.focus = focus
-        
+        self.mask = pygame.mask.from_surface(self.image)
+
         self.resize()
 
         # self.image.fill(self.color)
 
-    def move(self, move_by):
-
-        arena_size = 1000
-
-        factor = 1 # / (1 + self.points)
-
-        magnitude = np.linalg.norm(move_by)
-
-        if magnitude > 0.5:
-            move_by /= magnitude
-            move_by *= self.top_speed()
-
-
-        self.position += move_by * factor
-
-        size = self.get_size() / 2.1
-
-        if self.position[0] - size < 0:
-            self.position[0] = size
+    def move(self, velocity_goal = np.array([0, 0]), sprite_group = None):
+        """
+            Moves the cell towards the goal position
+                Given by kwargs: "to"
+            Shift by
+                Given by kwargs: "by"
+        """
         
-        if self.position[1] - size < 0:
-            self.position[1] = size
+        global P_TERM
 
-        if self.position[0] + size > arena_size:
-            self.position[0] = arena_size - size
+        delta_position = velocity_goal - self.velocity
+
+        delta_position *= P_TERM
+
+        magnitude = np.linalg.norm(delta_position)
         
-        if self.position[1] + size > arena_size:
-            self.position[1] = arena_size - size
+        if magnitude < 1e-4:
+            return
+
+        scaled_magnitude = min(magnitude, self.top_speed())
+
+        delta_position *= scaled_magnitude / magnitude
+
+
+
+        # Obstacle Avoidance
+        if sprite_group is not None:
+            
+            hit_list = pygame.sprite.spritecollide(self, sprite_group, False)
+            
+            for sprite in hit_list:
+
+                if sprite is self:
+                    continue
+                print(sprite)
+
+                collision_vector = sprite.position - self.position
+
+                collision_magnitude = np.linalg.norm(collision_vector)
+
+                avoidance = np.dot(collision_vector, delta_position) / collision_magnitude
+
+                avoidance = max(0, avoidance)
+
+                avoidance = collision_vector * avoidance / collision_magnitude
+
+                delta_position -= avoidance
+
+        magnitude = np.linalg.norm(delta_position)
+
+        if magnitude < 1e-1:
+            return
+        
+        self.position += delta_position
+        
     
     def update(self, control_dicitonary):
         
@@ -95,6 +131,7 @@ class Cell(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.base_image, new_size)
         self.rect = self.image.get_rect()
         self.rect.center = center
+        self.mask = pygame.mask.from_surface(self.image)
         
     def eat(self, game_objects):
 
@@ -114,9 +151,7 @@ class Cell(pygame.sprite.Sprite):
             obj.kill()
 
     def top_speed(self):
-        MIN_SPEED = 0.5
-        MAX_SPEED = 5.0
-        CURVE = 0.0001 # Decrease to make curve smoother
+        global MIN_SPEED, MAX_SPEED, CURVE
         return MIN_SPEED + (MAX_SPEED - MIN_SPEED) * np.exp(-CURVE * self.points)
     
     def update_points(self, delta = 0, new = -1):
@@ -124,6 +159,23 @@ class Cell(pygame.sprite.Sprite):
         self.points += delta
 
         self.resize()
+
+    def is_intersecting(self, other, **kwargs):
+
+        move_by = kwargs.get("move_by", np.array([0, 0]))
+        
+        distance = dist(self.position + move_by, other.position)
+        
+        return self.get_size() / 2 + other.get_size() / 2 > distance
+        
+
+
+
+
+
+        
+
+
 
 
 if __name__ == '__main__':
