@@ -11,13 +11,24 @@ REPULSION_C = 2
 
 class Player:
 
-    def __init__(self, id, spawn_position, points = 0):
+    def __init__(self, player_id, spawn_position, raw_cells, points=0,):
     
+        self.id = player_id
+        
         self.cells = pygame.sprite.Group()
 
-        self.cells.add(Cell(spawn_position.copy()))
-
         self.position_goal = spawn_position
+
+        self.raw_cells = raw_cells
+
+        self.spawn_cell()
+
+    def spawn_cell(self):
+        new_cell = Cell(player_id= self.id,
+                        cell_id = len(self.cells),
+                        position = self.position_goal.copy())
+        self.cells.add(new_cell)
+        self.raw_cells.add(new_cell)
 
     def update(self, commands):
         
@@ -31,9 +42,6 @@ class Player:
             print("Cell COunt ", len(self.cells))
 
         self.update_cells()
-
-        # print("position_goal", self.position_goal)
-        # print("cell position", self.cells.sprites()[0].position)
     
     def update_cells(self):
     
@@ -45,14 +53,14 @@ class Player:
 
         for cell in self.cells.sprites():
             
-            # print(cell.position, cell.id)
-            # print(type(self.cells))
-
-            cell.move(self.position_goal - cell.position, 
+            # TODO: Make Collisions between group to group
+            cell.move(self.position_goal, 
                       sprite_group = self.cells)
     
     def split(self):
-        self.cells.add(Cell(self.position_goal - np.array([100, 100])))
+        # TODO: Use self.spawn_cell
+        # self.cells.add(Cell(self.position_goal - np.array([100., 100])))
+        pass
 
     def move_position_goal(self, move_by):
 
@@ -80,22 +88,12 @@ class Player:
     def draw(self,screen):
         self.cells.draw(screen)
     
+    def get_score(self):
+        return sum([cell.points for cell in self.cells.sprites()]) / 100
 
 
-    # def move(self, move_by):
-    #     arena_size = 1000
-    #     factor = 1  # / (1 + self.points)
-    #     magnitude = np.linalg.norm(move_by)
-    #     if magnitude > 0.5:
-    #         move_by /= magnitude
-    #         move_by *= self.top_speed()
-    #     self.position += move_by * factor
-    #     size = self.get_size() / 2.1
-    #     if self.position[0] - size < 0:
-    #         self.position[0] = size
-    #     if self.position[1] - size < 0:
-    #         self.position[1] = size
-    #     if self.position[0] + size > arena_size:
-    #         self.position[0] = arena_size - size
-    #     if self.position[1] + size > arena_size:
-    #         self.position[1] = arena_size - size
+
+    #TODO: Implement these
+    # def get_position(self): 
+
+

@@ -52,24 +52,24 @@ class Spawner:
         
         return False
 
-    # def update_spawn_map(self):
+    def update_spawn_map(self):
         
-    #     #TODO: Let this method taken in a list of groups, based on which the spawn map is updated.
+        #TODO: Let this method taken in a list of groups, based on which the spawn map is updated.
 
-    #     self.spawn_map = np.ones(self.game.arena_size)
+        self.spawn_map = np.ones(self.game.arena_size)
         
-    #     for player in self.game.get_players():
+        for player in self.game.get_players():
             
-    #         for cell in player.get_cells():
+            for cell in player.get_cells():
 
-    #             cv.circle(img = self.spawn_map, 
-    #                     center = tuple(cell.position.astype(int)), 
-    #                     radius = int(cell.get_size() * self.CELL_BUFFER), 
-    #                     color = 0, thickness = -1)
+                cv.circle(img = self.spawn_map, 
+                        center = tuple(cell.position.astype(int)), 
+                        radius = int(cell.get_size() * self.CELL_BUFFER), 
+                        color = 0, thickness = -1)
             
-    #     for agar in self.game.agar.sprites():
+        for agar in self.game.agar.sprites():
             
-    #         cv.circle(img = self.spawn_map,
-    #                   center = tuple(agar.position.astype(int)),
-    #                   radius = int(agar.get_size() * self.AGAR_BUFFER   ),
-    #                   color = 0, thickness = -1)
+            cv.circle(img = self.spawn_map,
+                      center = tuple(agar.position.astype(int)),
+                      radius = int(agar.get_size() * self.AGAR_BUFFER   ),
+                      color = 0, thickness = -1)

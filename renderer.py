@@ -33,7 +33,9 @@ class Renderer:
         self.screen = pygame.display.set_mode(self.screen_size)
         
         pygame.display.set_caption("Agar.AI")
-                
+
+        self.font = pygame.font.SysFont("hack", size = 36)
+
         # Used to manage how fast the screen updates
         self.clock = pygame.time.Clock()
 
@@ -62,7 +64,6 @@ class Renderer:
             # --- Main event loop
             for event in pygame.event.get():
                   
-                
                 if event.type == pygame.QUIT:
                     self.running = False            
 
@@ -85,6 +86,8 @@ class Renderer:
             self.render_background()
 
             self.render_game_entities()
+
+            self.render_score_board()
 
             # --- Go ahead and update the screen with what we've drawn.
             pygame.display.flip()
@@ -115,14 +118,14 @@ class Renderer:
                 location = sprite.position - focused_entity.position_goal + self.screen_size / 2
                 sprite.rect.center = location
                 
-        # # Agar 
-        # for sprite in self.game.agar.sprites():
+        # Agar 
+        for sprite in self.game.agar.sprites():
             
-        #     location = sprite.position - focused_entity.position_goal + self.screen_size / 2
+            location = sprite.position - focused_entity.position_goal + self.screen_size / 2
             
-        #     sprite.rect.center = location
+            sprite.rect.center = location
         
-        # self.game.agar.draw(self.screen)
+        self.game.agar.draw(self.screen)
         self.game.players.draw(self.screen)
     
     def render_background(self):
@@ -146,7 +149,30 @@ class Renderer:
                 
                 self.screen.blit(self.background, (i, j))
         
+    def render_score_board(self):
         
+        y_offset = 10
+        y_spacing = 30
+
+        x_offset = 125
+
+        score_board = ["Score"] 
+
+        for player,score in self.game.scores():
+
+            score_board.append(f"{player.id} {score:.0f}")
+
+        for line in score_board:
+
+            text_render = self.font.render(line, True, (0, 0, 0)) 
+
+            text_rect = text_render.get_rect(topleft = (self.screen_size[0] - x_offset, 
+                                                        y_offset))
+
+            y_offset += y_spacing
+
+            self.screen.blit(text_render, text_rect)
+
     
 if __name__ == "__main__":
     

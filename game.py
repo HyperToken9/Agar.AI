@@ -30,44 +30,38 @@ class Game:
         """
             The control dictionary assigns each colony with their updated speed.
         """
+        
+        self.process_agar_consumption()
+
         control_dicitonary = game_arguments.get('control', {})
         
         self.players.update(control_dicitonary)
-        
-        # # Eating Agar
-        # eat_dict = pygame.sprite.groupcollide(self.colonies, self.agar, False, False)
-        
-        # for colony, agars in eat_dict.items():
-            
-        #     colony.eat(agars)
 
-        # Eating Colony
-        # eat_dict = pygame.sprite.groupcollide(self.colonies, self.colonies, False, False)
-
-        # for colony, colonies in eat_dict.items():
-        #     # print(colonies)
-        #     colony.eat(colonies)
-        
+ 
         # Spawing Agar
-        # self.spawner.spawn_agar()
+        self.spawner.spawn_agar()
 
     def get_players(self):
 
         return self.players.player_index.values()
 
-    # def add_player(self, position = np.array([500, 500.])): 
-    #     self.players.spawn_player(position)
-        # global COLONY_ID
-        # if COLONY_ID == 0:
-        #     self.colonies[COLONY_ID] = Colony(id = COLONY_ID,
-        #                                       spawn_position = position,
-        #                                       focus=True)
-        # else:
-        #     self.colonies[COLONY_ID] = Colony(id = COLONY_ID, 
-        #                                       spawn_position = position, 
-        #                                       points = 900)
-        # COLONY_ID += 1
-                    
+    def process_agar_consumption(self):
+
+        # Eating Agar
+        collision_dict = pygame.sprite.groupcollide(
+                                self.players.raw_cells, self.agar, 
+                                False, False)
+
+        for player_cell, agars in collision_dict.items():
+            
+            player_cell.eat(agars)
+
+    def scores(self):
+        
+        score_list = [[player, player.get_score()] for player in self.get_players()]
+
+        return sorted(score_list, key=lambda x: x[1], reverse=True)
+    
 if __name__ == "__main__":
 
     print("This is the game.py file.")
